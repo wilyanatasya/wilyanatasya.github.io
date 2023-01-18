@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>RAWAN LONGSOR</title>
+    <link rel="stylesheet" href="library/leaflet/leaflet.css" />
+    <link rel="stylesheet" href="css/style.css" />
+    <script src="library/leaflet/leaflet.js"></script>
+    <script src="library/leaflet-providers-master/leaflet-providers.js"></script>
+    <script src="library/jquery.min.js"></script>
+</head>
+
+<body>
+    <div id="map">
+        <script>
+            var map = L.map('map').setView([-7.997170519406784, 110.60933609599812], 12);
+
+            var baseLayers = {
+                'Esri WorldTopoMap': L.tileLayer.provider('Esri.WorldTopoMap'),
+                'Esri WorldImagery': L.tileLayer.provider('Esri.WorldImagery'),
+                'OSM Default': L.tileLayer.provider('OpenStreetMap.DE').addTo(map),
+                'OSM France': L.tileLayer.provider('OpenStreetMap.France')
+            };
+
+
+            /* Memanggil Layer Rawan Longsor */
+            var AreaRawanLongsor = L.geoJson(null, {
+                style: function(feature) {
+                    return {
+                        color: "black",
+                        fillColor: KlasLongsor[feature.properties.Kls_Lngsor],
+                        weight: 0.3,
+                        opacity: 0,
+                        fillOpacity: 0.7
+                    };
+                },
+                onEachFeature: function( feature, layer ){
+                    layer.bindPopup(
+                        "Klas Rawan Longsor : " + "<left>" + feature.properties.Klas_Rawan + "</left>" + "<br>" +
+                        "Luas :" + "<left>" + feature.properties.Shape_Area + "</left>" + " m2"
+                        )
+                }
+            });
+            $.getJSON("data/TanahLongsor_Gunkid.json", function(data) {
+                AreaRawanLongsor.addData(data);
+            });
+
+            /* Merubah Tampilan Warna Berdasar Atribut Klas Longsor */
+            var KlasLongsor = {
+                "Rendah":"#99def0",
+                "Sedang":"#e1fa70",
+                "Tinggi":"#fc7256",
+            };
+
+            var mapLayers = {
+                'Area Rawan Longsor': AreaRawanLongsor
+            };
+
+            L.control.layers(baseLayers, mapLayers).addTo(map);
+        </script>
+    </div>
+</body>
+
+</html>
